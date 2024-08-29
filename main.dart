@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Supabase Flutter',
       home: HomePage(),
     );
@@ -36,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   // 각 페이지를 나타내는 위젯들
-  static List<Widget> _widgetOptions = <Widget>[
+  static final List<Widget> _widgetOptions = <Widget>[
     const FirstPage(),
     const SecondPage(),
     const ThirdPage(),
