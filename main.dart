@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'sensorA.dart';
+import 'sensorB.dart';
+import 'sensorC.dart';
+import 'actionLog.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,22 +30,113 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: InitialScreen(), // 초기화면 위젯을 사용
+    );
+  }
 }
 
-class _HomePageState extends State<HomePage> {
+class InitialScreen extends StatelessWidget {
+  const InitialScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.blueAccent[200], // 배경 색상 변경
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'Sprinkler App',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'collaborator: aaa\nProject.',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              const Divider(color: Colors.white, thickness: 2, indent: 30, endIndent: 30),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LogPages()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(32),
+                      backgroundColor: Colors.white, // 버튼 배경색
+                    ),
+                    child: const Text(
+                      'LOG',
+                      style: TextStyle(color: Colors.black, fontSize: 24),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ActionLogPage()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(32),
+                      backgroundColor: Colors.white, // 버튼 배경색
+                    ),
+                    child: const Text(
+                      'ACTION',
+                      style: TextStyle(color: Colors.black, fontSize: 24),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LogPages extends StatefulWidget {
+  const LogPages({super.key});
+
+  @override
+  _LogPagesState createState() => _LogPagesState();
+}
+
+class _LogPagesState extends State<LogPages> {
   int _selectedIndex = 0;
 
-  // 각 페이지를 나타내는 위젯들
   static final List<Widget> _widgetOptions = <Widget>[
     const FirstPage(),
     const SecondPage(),
     const ThirdPage(),
-    const ActionLogPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -54,7 +149,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sprinkler App'),
+        title: const Text('로그 페이지'),
         backgroundColor: Colors.blueAccent[100],
         centerTitle: true,
       ),
@@ -74,10 +169,6 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.looks_3),
             label: '3',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Log',
-          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blueAccent,
@@ -87,227 +178,4 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class FirstPage extends StatelessWidget {
-  const FirstPage({super.key});
-
-  Future<List<Map<String, dynamic>>> fetchData() async {
-    final response = await supabase
-        .from('sprinkler_get')
-        .select('day, time, temperature, humidity');
-
-
-    return List<Map<String, dynamic>>.from(response as List);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: fetchData(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No Data Found'));
-        } else {
-          final data = snapshot.data!;
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.all(8.0),
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Day: ${data[index]['day']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Time: ${data[index]['time']}', style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text('Temp: ${data[index]['temperature']}°C', style: const TextStyle(fontSize: 16)),
-                        Text('Humidity: ${data[index]['humidity']}%', style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        }
-      },
-    );
-  }
-}
-
-class SecondPage extends StatelessWidget {
-  const SecondPage({super.key});
-
-  Future<List<Map<String, dynamic>>> fetchData() async {
-    final response = await supabase
-        .from('sprinkler_get2')
-        .select('day, time, temperature, humidity');
-
-
-    return List<Map<String, dynamic>>.from(response as List);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: fetchData(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No Data Found'));
-        } else {
-          final data = snapshot.data!;
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.all(8.0),
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Day: ${data[index]['day']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Time: ${data[index]['time']}', style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text('Temp: ${data[index]['temperature']}°C', style: const TextStyle(fontSize: 16)),
-                        Text('Humidity: ${data[index]['humidity']}%', style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        }
-      },
-    );
-  }
-}
-
-class ThirdPage extends StatelessWidget {
-  const ThirdPage({super.key});
-
-  Future<List<Map<String, dynamic>>> fetchData() async {
-    final response = await supabase
-        .from('sprinkler_get3')
-        .select('day, time, temperature, humidity');
-
-
-    return List<Map<String, dynamic>>.from(response as List);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: fetchData(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No Data Found'));
-        } else {
-          final data = snapshot.data!;
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.all(8.0),
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Day: ${data[index]['day']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Time: ${data[index]['time']}', style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text('Temp: ${data[index]['temperature']}°C', style: const TextStyle(fontSize: 16)),
-                        Text('Humidity: ${data[index]['humidity']}%', style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        }
-      },
-    );
-  }
-}
-
-class ActionLogPage extends StatelessWidget {
-  const ActionLogPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Action Log Page'),
-    );
-  }
-}
 
