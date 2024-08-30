@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'InitialScreen.dart';
-import 'sensorA.dart';
-import 'sensorB.dart';
-import 'sensorC.dart';
-import 'actionLog.dart';
+import 'initial_screen.dart';
+import 'sensor_a.dart';
+import 'sensor_b.dart';
+import 'sensor_c.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,16 +45,16 @@ class LogPages extends StatefulWidget {
   const LogPages({super.key});
 
   @override
-  _LogPagesState createState() => _LogPagesState();
+  LogPagesState createState() => LogPagesState();
 }
 
-class _LogPagesState extends State<LogPages> {
+class LogPagesState extends State<LogPages> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    FirstPage(),
-    SecondPage(),
-    ThirdPage(),
+    const FirstPage(),
+    const SecondPage(),
+    const ThirdPage(),
   ];
 
   void _onItemTapped(int index) {

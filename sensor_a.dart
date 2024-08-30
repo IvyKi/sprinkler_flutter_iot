@@ -1,0 +1,98 @@
+import 'package:flutter/material.dart';
+import 'main.dart';
+
+class FirstPage extends StatefulWidget {
+  const FirstPage({super.key});
+
+  @override
+  FirstPageState createState() => FirstPageState();
+}
+
+class FirstPageState extends State<FirstPage> {
+  final ScrollController _scrollController = ScrollController();
+  List<Map<String, dynamic>> data = [];
+
+  Future<void> fetchData() async {
+    final response = await supabase
+        .from('sprinkler_get')
+        .select('day, time, temperature, humidity');
+
+    setState(() {
+      data = List<Map<String, dynamic>>.from(response as List).reversed.toList();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  void _deleteItem(int index) {
+    setState(() {
+      data.removeAt(index);  // 선택된 항목 삭제
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Item deleted')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: data.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+        controller: _scrollController,
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Day: ${data[index]['day']}',
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text('Time: ${data[index]['time']}',
+                        style: const TextStyle(fontSize: 16)),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('Temp: ${data[index]['temperature']}°C',
+                        style: const TextStyle(fontSize: 16)),
+                    Text('Humidity: ${data[index]['humidity']}%',
+                        style: const TextStyle(fontSize: 16)),
+
+                  ],
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.black),
+                  onPressed: () => _deleteItem(index),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
