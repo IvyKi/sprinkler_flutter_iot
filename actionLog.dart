@@ -8,7 +8,7 @@ class ActionLogPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('액션 로그 페이지'),
+        title: const Text('Action Page'),
         backgroundColor: Colors.blueAccent[100],
         centerTitle: true,
       ),

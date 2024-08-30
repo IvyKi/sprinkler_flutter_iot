@@ -2,7 +2,9 @@ import "package:flutter/material.dart";
 import 'main.dart';
 
 class FirstPage extends StatelessWidget {
-  const FirstPage({super.key});
+  FirstPage({super.key});
+
+  final ScrollController _scrollController = ScrollController();
 
   Future<List<Map<String, dynamic>>> fetchData() async {
     final response = await supabase
@@ -25,7 +27,12 @@ class FirstPage extends StatelessWidget {
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(child: Text('No Data Found'));
         } else {
-          final data = snapshot.data!;
+          final data = snapshot.data!.reversed.toList();
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _scrollController.jumpTo(_scrollController.position.minScrollExtent);
+          });
+
           return ListView.builder(
             itemCount: data.length,
             itemBuilder: (context, index) {

@@ -36,7 +36,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: InitialScreen(), // 초기화면 위젯을 사용
+      body: InitialScreen(), // InitialScreen Widget(Stateless)
     );
   }
 }
@@ -47,34 +47,54 @@ class InitialScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueAccent[200], // 배경 색상 변경
+      backgroundColor: Colors.blueAccent[200],
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'Sprinkler App',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               const Text(
-                'collaborator: aaa\nProject.',
+                'Collaborator. 기나혜, 김하연, 최태훈\n',
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.white,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
               ),
-              const SizedBox(height: 32),
-              const Divider(color: Colors.white, thickness: 2, indent: 30, endIndent: 30),
+              const SizedBox(height: 16),
+              const Text(
+                'Project.',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.left,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                    '\t 스프링쿨러 로봇시스템 제어 및 관찰용 어플리케이션 \n'
+                    '\t The Application for controlling and observing the Sprinkler Robot System',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.left,
+              ),
+              const SizedBox(height: 48),
+              const Divider(color: Colors.white, thickness: 2),
               const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -89,7 +109,7 @@ class InitialScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       shape: const CircleBorder(),
                       padding: const EdgeInsets.all(32),
-                      backgroundColor: Colors.white, // 버튼 배경색
+                      backgroundColor: Colors.white,
                     ),
                     child: const Text(
                       'LOG',
@@ -106,7 +126,7 @@ class InitialScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       shape: const CircleBorder(),
                       padding: const EdgeInsets.all(32),
-                      backgroundColor: Colors.white, // 버튼 배경색
+                      backgroundColor: Colors.white,
                     ),
                     child: const Text(
                       'ACTION',
@@ -134,9 +154,9 @@ class _LogPagesState extends State<LogPages> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const FirstPage(),
-    const SecondPage(),
-    const ThirdPage(),
+    FirstPage(),
+    SecondPage(),
+    ThirdPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -149,7 +169,7 @@ class _LogPagesState extends State<LogPages> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('로그 페이지'),
+        title: const Text('Log Page'),
         backgroundColor: Colors.blueAccent[100],
         centerTitle: true,
       ),
