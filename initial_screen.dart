@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
-import 'action_log.dart';
+import 'action.dart';
 
 class InitialScreen extends StatelessWidget {
   const InitialScreen({super.key});
@@ -47,14 +47,15 @@ class InitialScreen extends StatelessWidget {
               const SizedBox(height: 12),
               const Text(
                 '\t 스프링쿨러 로봇시스템 제어 및 관찰용 어플리케이션 \n'
-                    '\t The Application for controlling and observing the Sprinkler Robot System',
+                    '\t The Application for controlling and observing the Sprinkler Robot System'
+                    '\n\n\n\t 2024 임베디드시스템 경진대회 본선 출품작',
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.white,
                 ),
                 textAlign: TextAlign.left,
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 24),
               const Divider(color: Colors.white, thickness: 2),
               const SizedBox(height: 32),
               Row(
@@ -81,7 +82,7 @@ class InitialScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const ActionLogPage()),
+                        MaterialPageRoute(builder: (context) => ActionPage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
