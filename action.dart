@@ -168,6 +168,8 @@ class SensorSelectionDialogState extends State<SensorSelectionDialog> {
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+
+
 class ActionPage extends StatefulWidget {
   const ActionPage({super.key});
 
@@ -176,7 +178,10 @@ class ActionPage extends StatefulWidget {
 }
 
 class ActionPageState extends State<ActionPage> {
-  List<Map<String, bool>> logs = [];
+  List<Map<String, dynamic>> logs = [];
+  List<Map<String, dynamic>> data = [];
+
+
 
   void _showToast(BuildContext context) async {
     final result = await showDialog(
@@ -187,20 +192,55 @@ class ActionPageState extends State<ActionPage> {
     );
 
     if (result != null) {
+      DateTime originalTime = result['time'];
+      String formattedTime = '${originalTime.year}-${originalTime.month.toString().padLeft(2, '0')}-${originalTime.day.toString().padLeft(2, '0')} '
+          '${originalTime.hour.toString().padLeft(2, '0')}:${originalTime.minute.toString().padLeft(2, '0')}:${originalTime.second.toString().padLeft(2, '0')}';
+
       setState(() {
-        logs.insert(0, result); // 새 로그는 리스트의 맨 위에 추가
+        logs.insert(0, result); // Add the new log to the top of the list
       });
-      DateTime now = DateTime.now();
 
-      final supabase = Supabase.instance.client;
-      await supabase.from('action').insert({
+      try {
+        final supabase = Supabase.instance.client;
+        final response = await supabase.from('action').insert({
+          'sensor_a': result['A'] ?? false,
+          'sensor_b': result['B'] ?? false,
+          'sensor_c': result['C'] ?? false,
+          'time': formattedTime.toString(),
+        });
 
-        'sensor_a': result['A'] ?? false,
-        'sensor_b': result['B'] ?? false,
-        'sensor_c': result['C'] ?? false,
-        'time' : now
-      });
+        // Check if there was an error in the response
+        if (response.error != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${response.error!.message}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Data sent successfully to Supabase!')),
+          );
+        }
+      } catch (e) {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('Error: $e')),
+        // );
+      }
     }
+  }
+
+  Future<void> fetchData() async {
+    final response = await Supabase.instance.client
+        .from('action')
+        .select('sensor_a, sensor_b, sensor_c, time');
+
+    setState(() {
+      data = List<Map<String, dynamic>>.from(response as List).reversed.toList();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
   }
 
   @override
@@ -220,7 +260,7 @@ class ActionPageState extends State<ActionPage> {
               width: 100,
               height: 100,
               decoration: const BoxDecoration(
-                color: Colors.red,
+                color: Colors.redAccent,
                 shape: BoxShape.circle,
               ),
               child: const Center(
@@ -239,9 +279,9 @@ class ActionPageState extends State<ActionPage> {
           const Divider(height: 40, thickness: 2),
           Expanded(
             child: ListView.builder(
-              itemCount: logs.length,
+              itemCount: data.length,
               itemBuilder: (context, index) {
-                final log = logs[index];
+
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   child: Card(
@@ -253,9 +293,11 @@ class ActionPageState extends State<ActionPage> {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+
                         children: [
+
                           Text(
-                            'Sensor A: ${log['A']} | Sensor B: ${log['B']} | Sensor C: ${log['C']} | Time: ${DateTime.now()}',
+                            'A: ${data[index]['sensor_a']} | B: ${data[index]['sensor_b']} | C: ${data[index]['sensor_c']} | Time: ${data[index]['time']}',
                             style: const TextStyle(
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
@@ -268,15 +310,8 @@ class ActionPageState extends State<ActionPage> {
                               IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () async {
-
-                                  final supabase = Supabase.instance.client;
-                                      // Remove from Supabase
-                                  await supabase
-                                    .from('action')
-                                      .delete();
-
                                   setState(() {
-                                    logs.removeAt(index);
+                                    data.removeAt(index);
                                   });
                                 },
                               ),
@@ -308,6 +343,7 @@ class SensorSelectionDialogState extends State<SensorSelectionDialog> {
   bool _sensorB = false;
   bool _sensorC = false;
   bool _selectAll = false;
+  DateTime _time = DateTime.now();
 
   void _toggleSelectAll(bool? value) {
     setState(() {
@@ -315,6 +351,7 @@ class SensorSelectionDialogState extends State<SensorSelectionDialog> {
       _sensorA = _selectAll;
       _sensorB = _selectAll;
       _sensorC = _selectAll;
+      _time = _time;
     });
   }
 
@@ -366,6 +403,7 @@ class SensorSelectionDialogState extends State<SensorSelectionDialog> {
               'A': _sensorA,
               'B': _sensorB,
               'C': _sensorC,
+              'time': _time,
             });
           },
           child: const Text('RUN'),

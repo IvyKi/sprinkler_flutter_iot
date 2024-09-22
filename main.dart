@@ -4,6 +4,7 @@ import 'initial_screen.dart';
 import 'sensor_a.dart';
 import 'sensor_b.dart';
 import 'sensor_c.dart';
+import 'action.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +56,7 @@ class LogPagesState extends State<LogPages> {
     const FirstPage(),
     const SecondPage(),
     const ThirdPage(),
+    const ActionPage(),
   ];
 
   void _onItemTapped(int index) {

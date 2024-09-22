@@ -15,7 +15,7 @@ class FirstPageState extends State<FirstPage> {
   Future<void> fetchData() async {
     final response = await supabase
         .from('sprinkler_get')
-        .select('day, time, temperature, humidity');
+        .select('day, time, temperature, humidity, id');
 
     setState(() {
       data = List<Map<String, dynamic>>.from(response as List).reversed.toList();
@@ -28,13 +28,26 @@ class FirstPageState extends State<FirstPage> {
     fetchData();
   }
 
-  void _deleteItem(int index) {
-    setState(() {
-      data.removeAt(index);  // 선택된 항목 삭제
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Item deleted')),
-    );
+  Future<void> _deleteItem(int index) async {
+    try {
+      // Supabase에서 해당 항목을 삭제
+      final id = data[index]['id'];
+      await supabase.from('sprinkler_get').delete().eq('id', id);
+
+      // UI에서도 삭제
+      setState(() {
+        data.removeAt(index);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Item deleted successfully')),
+      );
+    } catch (e) {
+      // 오류 발생 시 에러 메시지 표시
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete item')),
+      );
+    }
   }
 
   @override
@@ -81,7 +94,6 @@ class FirstPageState extends State<FirstPage> {
                         style: const TextStyle(fontSize: 16)),
                     Text('Humidity: ${data[index]['humidity']}%',
                         style: const TextStyle(fontSize: 16)),
-
                   ],
                 ),
                 IconButton(
