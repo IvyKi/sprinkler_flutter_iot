@@ -14,8 +14,8 @@ class FirstPageState extends State<FirstPage> {
 
   Future<void> fetchData() async {
     final response = await supabase
-        .from('sprinkler_get')
-        .select('day, time, temperature, humidity, id');
+        .from('sprinkler_get1')
+        .select('day, time, temperature, humidity, trigger, id');
 
     setState(() {
       data = List<Map<String, dynamic>>.from(response as List).reversed.toList();
@@ -32,7 +32,7 @@ class FirstPageState extends State<FirstPage> {
     try {
       // Supabase에서 해당 항목을 삭제
       final id = data[index]['id'];
-      await supabase.from('sprinkler_get').delete().eq('id', id);
+      await supabase.from('sprinkler_get1').delete().eq('id', id);
 
       // UI에서도 삭제
       setState(() {
@@ -59,11 +59,13 @@ class FirstPageState extends State<FirstPage> {
         controller: _scrollController,
         itemCount: data.length,
         itemBuilder: (context, index) {
+          final isTriggered = data[index]['trigger'] == true;
+
           return Container(
             margin: const EdgeInsets.all(8.0),
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isTriggered ? Colors.blueAccent[100]?.withOpacity(0.5) : Colors.white.withOpacity(1.0),
               borderRadius: BorderRadius.circular(8.0),
               boxShadow: [
                 BoxShadow(

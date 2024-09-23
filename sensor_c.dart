@@ -15,7 +15,7 @@ class ThirdPageState extends State<ThirdPage> {
   Future<void> fetchData() async {
     final response = await supabase
         .from('sprinkler_get3')
-        .select('day, time, temperature, humidity, id');
+        .select('day, time, temperature, humidity, trigger, id');
 
     setState(() {
       data = List<Map<String, dynamic>>.from(response as List).reversed.toList();
@@ -59,11 +59,13 @@ class ThirdPageState extends State<ThirdPage> {
         controller: _scrollController,
         itemCount: data.length,
         itemBuilder: (context, index) {
+          final isTriggered = data[index]['trigger'] == true;
+
           return Container(
             margin: const EdgeInsets.all(8.0),
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isTriggered ? Colors.blueAccent[100]?.withOpacity(0.5) : Colors.white.withOpacity(1.0),
               borderRadius: BorderRadius.circular(8.0),
               boxShadow: [
                 BoxShadow(
